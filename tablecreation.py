@@ -2,7 +2,7 @@ import mysql.connector as test
 #enter the user and password here
 
 sql_user="root"
-sql_pass="Gurjot@2004"
+sql_pass=input("Enter your MySQL Password")
 con=test.connect(host="localhost",user=sql_user,passwd=sql_pass)
 #creating cur, the cursor object
 cur=con.cursor()
