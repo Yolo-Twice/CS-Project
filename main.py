@@ -177,8 +177,9 @@ def table_storage(data): #this is used to create the Storage table in tkinter
 
 def exit_window(): #used by tkinter
     window.destroy()
-
-con=run.connect(host="localhost",user="root",passwd="Gurjot@2004",database="pc_parts")
+user_name=input("Enter your MySQL Username: ")
+user_pass=input("Enter your MySQL Password: ")
+con=run.connect(host="localhost",user=user_name,passwd=user_pass,database="pc_parts")
 
 cur=con.cursor(buffered=True)
 additional=""
@@ -187,7 +188,7 @@ where_command=""
 ################################MAIN LOOP##################################
 
 while True:
-    print("1.Display Tables\n2.Load/Save Builds\n3.See the selected components")
+    print("1.Display Tables\n2.Load/Save Builds\n3.See the selected components\n4.Build Info\n5.ADMIN SECTION\n6.Exit")
     uc=int(input(">"))
 
     if uc==1:
@@ -410,20 +411,20 @@ while True:
                         cur.execute(f'select * from ram where pno="{RAM_selection}";')
                         Ram_data_single=cur.fetchall()[0]
                         if Ram_data_single[5]==2:
-                            i+=2
                             Ram_data[i]=Ram_data_single
                             Ram_data[i+1]=Ram_data_single
-                            print(f"For Slot {i-1} and {i} {Ram_data_single[1]}Selected!")
+                            print(f"For Slot {i+1} and {i+2} {Ram_data_single[1]}Selected!")
+                            i+=2
                             continue
                         Ram_data[i]=Ram_data_single
                         print(f"For Slot {i+1} {Ram_data_single[1]}Selected!")
                         i+=1
-                        total_ram_size=0
-                        for i in range(len(Ram_data)):
-                            total_ram_size+=Ram_data[i][3]
-                        print("Total Ram size is",total_ram_size)
-                        if total_ram_size>mobo_data[6] or total_ram_size>cpu_data[10]:
-                            print("Warning TOTAL RAM SIZE IS OVER THE LIMIT")
+                    total_ram_size=0
+                    for i in range(len(Ram_data)):
+                        total_ram_size+=Ram_data[i][3]/Ram_data[i][5]
+                    print("Total Ram size is",total_ram_size,"GB")
+                    if total_ram_size>mobo_data[6] or total_ram_size>cpu_data[10]:
+                        print("Warning TOTAL RAM SIZE IS OVER THE LIMIT")
                 elif uc==6:
                     table_name=""
                     column_names=""
@@ -536,6 +537,113 @@ while True:
         print("Motherboard: ",mobo_data[1])
         print("GPU: ",gpu_data[1])
         print("Storage: ",storage_data[1])
-
+        for i in range(len(Ram_data)):
+            print(f"Ram {i+1}: {Ram_data[i][1]}")
+    elif uc==4:
+        while True:
+            print("1.Wattage Calculator\n2.CPU Details\n3.Motherboard details\n4.RAM Details\n5.GPU Details\n6.Storage details\n7.Go Back")
+            uc=int(input(">"))
+            if uc==1:
+                try:
+                    wattage_used=63+(total_ram_size/4)
+                except:
+                    total_ram_size=0
+                    for i in range(len(Ram_data)):
+                            total_ram_size+=Ram_data[i][3]/Ram_data[i][5]
+                    wattage_used=63+(total_ram_size/4)
+                wattage_used+=cpu_data[8]+gpu_data[6]
+                if storage_data[4]=="SSD":
+                    wattage_used+=3
+                else:
+                    wattage_used+=11
+                print("Wattage used: ",wattage_used,"Watts")
+            elif uc==2:
+                print("Name: ",cpu_data[1],"\nSocket: ",cpu_data[3],"\nBase Clock: ",cpu_data[4],"GHz\nBoost Clock: ",cpu_data[5],"GHz\nCore: ",cpu_data[7],"Cores\nPower Consumed: ",cpu_data[8],"Watts\nGeneration: ",cpu_data[9],"th Gen\nMax Memory Supported: ",cpu_data[10],"GB\nPrice: ",cpu_data[11],"\nLink: ",cpu_data[11])
+            elif uc==3:
+                continue
+            elif uc==4:
+                continue
+            elif uc==5:
+                continue
+            elif uc==6:
+                continue
+            elif uc==7:
+                break
+    elif uc==5:
+        #Username is root 
+        #Password is admin
+        user_name=input("Enter the Username: ")
+        if user_name!="root":
+            print("WRONG USERNAME!")
+            continue
+        user_pass=input("Enter the Password: ")
+        if user_pass!="admin":
+            print("WRONG PASSWORD!")
+            continue
+        while True:
+            print("1.Add Components\n2.Remove Components\n3.Go Back")
+            uc=int(input(">"))
+            if uc==1:
+                print("Which Component to add?\n1.CPU\n2.GPU\n3.Motherboard\n4.RAM\n5.Storage\n6.Go Back")
+                uc=int(input(">"))
+                if uc==1:
+                    cpu_list=list()
+                    column_names=["Serial Number","Name","Part Number","Socket","Base Clock","Boost Clock","GPU_Requirment","Core Count","Power Consumed","Generation","Max Memory","Price","Link"]
+                    for i in range(13):
+                        print(f"Enter the {column_names[i]}")
+                        uc=input(">")
+                        cpu_list.append(uc)
+                    execut=f'insert into cpu values({cpu_list[0]},"{cpu_list[1]}","{cpu_list[2]}","{cpu_list[3]}",{cpu_list[4]},{cpu_list[5]},"{cpu_list[6]}",{cpu_list[7]},{cpu_list[8]},{cpu_list[9]},{cpu_list[10]},{cpu_list[11]},"{cpu_list[12]}");'
+                    cur.execute(execut)
+                    con.commit()
+                elif uc==3:
+                    mobo_list=list()
+                    column_names=["Serial Number","Name","Part Number","Socket","Chiptset","Form Factor","Max Memory","Ram Type","Max Ram Speed","Ram Slots","PCIE Slots","Price","Link"]
+                    for i in range(13):
+                        print(f"Enter the {column_names[i]}")
+                        uc=input(">")
+                        mobo_list.append(uc)
+                    execut=f'insert into motherboard values({mobo_list[0]},"{mobo_list[1]}","{mobo_list[2]}","{mobo_list[3]}","{mobo_list[4]}","{mobo_list[5]}",{mobo_list[6]},"{mobo_list[7]}",{mobo_list[8]},{mobo_list[9]},{mobo_list[10]},{mobo_list[11]},"{mobo_list[12]}");'
+                    cur.execute(execut)
+                    con.commit()
+                elif uc==2:
+                    gpu_list=list()
+                    column_names=["Serial Number","Name","Part Number","Socket","Base Clock","Boost Clock","VRAM","Power Consume","Price","Link"]
+                    for i in range(9):
+                        print(f"Enter the {column_names[i]}")
+                        uc=input(">")
+                        gpu_list.append(uc)
+                    execut=f'insert into gpu values({gpu_list[0]},"{gpu_list[1]}","{gpu_list[2]}",{gpu_list[3]},{gpu_list[4]},{gpu_list[5]},{gpu_list[6]},{gpu_list[7]},"{gpu_list[8]}");'
+                    cur.execute(execut)
+                    con.commit()
+                elif uc==4:
+                    ram_list=list()
+                    column_names=["Serial Number","Name","Part Number","Size","Speed/Frequency (in MT/s)","Module Amount","RAM Type","Price","Link"]
+                    for i in range(9):
+                        print(f"Enter the {column_names[i]}")
+                        uc=input(">")
+                        ram_list.append(uc)
+                    execut=f'insert into ram values({ram_list[0]},"{ram_list[1]}","{ram_list[2]}",{ram_list[3]},{ram_list[4]},{ram_list[5]},"{ram_list[6]}",{ram_list[7]},"{ram_list[8]}");'
+                    cur.execute(execut)
+                    con.commit()
+                elif uc==4:
+                    storage_list=list()
+                    column_names=["Serial Number","Name","Part Number","Size","Type","Transfer Speed (in MB/s)","Price","Link"]
+                    for i in range(9):
+                        print(f"Enter the {column_names[i]}")
+                        uc=input(">")
+                        storage_list.append(uc)
+                    execut=f'insert into storage values({storage_list[0]},"{storage_list[1]}","{storage_list[2]}",{storage_list[3]},"{storage_list[4]}",{storage_list[5]},{storage_list[6]},"{storage_list[7]}");'
+                    cur.execute(execut)
+                    con.commit()
+                elif uc==6:
+                    break
+            elif uc==2:
+                print("Enter the Table from which to remove")
+                uc=input(">")
+                pno=input("Enter the Part Number: ")
+                execut=f'delete from {uc} where pno="{pno}"'
+            elif uc==3:
+                break   
     else:
         break
