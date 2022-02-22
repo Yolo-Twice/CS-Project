@@ -1,5 +1,6 @@
 # CS-Project
-As of 22/2/22 this project is now finished
+As of 22/2/22 this project is now finished.
+
 PC Customs is a python script that is used to select components for making a PC.
 
 This Software helps the user by suggesting various different options available in the market for the components that are best suitable for the given PC.
