@@ -34,6 +34,7 @@ def table_gpu(data): #this is used to create the GPU table in tkinter
         x=x+1
     but1= Button(window,text="Exit",command=exit_window,font="15")
     but1.grid(sticky=W)
+    window.mainloop()
 
 def table_cpu(data): #this is used to create the CPU table in tkinter
     fetched_data=data
@@ -72,6 +73,7 @@ def table_cpu(data): #this is used to create the CPU table in tkinter
         x=x+1
     but1= Button(window,text="Exit",command=exit_window,font="15")
     but1.grid(sticky=W)
+    window.mainloop()
 
 def table_mobo(data): #this is used to create the Motherboard table in tkinter
     fetched_data=data
@@ -110,6 +112,7 @@ def table_mobo(data): #this is used to create the Motherboard table in tkinter
         x=x+1
     but1= Button(window,text="Exit",command=exit_window,font="15")
     but1.grid(sticky=W)
+    window.mainloop()
 
 def table_ram(data): #this is used to create the Motherboard table in tkinter
     fetched_data=data
@@ -144,6 +147,7 @@ def table_ram(data): #this is used to create the Motherboard table in tkinter
         x=x+1
     but1= Button(window,text="Exit",command=exit_window,font="15")
     but1.grid(sticky=W)
+    window.mainloop()
 
 def table_storage(data): #this is used to create the Storage table in tkinter
     fetched_data=data
@@ -177,6 +181,7 @@ def table_storage(data): #this is used to create the Storage table in tkinter
         x=x+1
     but1= Button(window,text="Exit",command=exit_window,font="15")
     but1.grid(sticky=W)
+    window.mainloop()
 
 
 
@@ -209,8 +214,7 @@ while True:
                     if uc==1:
                         cur.execute(f"select {column_names} from {table_name} {where_command} {additional};")
                         data=cur.fetchall()
-                        table_gpu(data)
-                        window.mainloop()
+                        table_gpu(data)                        
                     elif uc==3:
                         print("1.by Price\n2.by Clockspeed\n3.by VRAM\n4.Clear")
                         uc=int(input(">"))
